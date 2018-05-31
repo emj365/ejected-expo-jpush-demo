@@ -66,10 +66,10 @@
     </activity>
     <meta-data
         android:name="JPUSH_APPKEY"
-        android:value="${JPUSH_APPKEY}" />
+        android:value="1df6239b32c427addb126022" />
     <meta-data
         android:name="JPUSH_CHANNEL"
-        android:value="${APP_CHANNEL}" />
+        android:value="whatever" />
 
 
     <activity

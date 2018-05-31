@@ -1,6 +1,7 @@
 package host.exp.exponent;
 
 
+import cn.jpush.reactnativejpush.JPushPackage;
 import com.facebook.react.ReactPackage;
 
 import java.util.Arrays;
@@ -9,9 +10,14 @@ import java.util.List;
 import expolib_v1.okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
-// import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactApplication;
 
 public class MainApplication extends ExpoApplication {
+
+  // 设置为 true 将不会弹出 toast
+  private boolean SHUTDOWN_TOAST = false;
+  // 设置为 true 将不会打印 log
+  private boolean SHUTDOWN_LOG = false;
 
   @Override
   public boolean isDebug() {
@@ -26,6 +32,7 @@ public class MainApplication extends ExpoApplication {
 
         // Needed for `react-native link`
         // new MainReactPackage()
+        new JPushPackage(SHUTDOWN_TOAST, SHUTDOWN_LOG)   //  <-- 添加 JPushPackage
     );
   }
 
