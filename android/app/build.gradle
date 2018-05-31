@@ -4,6 +4,8 @@ buildscript {
   }
 
   dependencies {
+    compile project(':jcore-react-native')
+    compile project(':jpush-react-native')
     classpath 'io.fabric.tools:gradle:1.+'
   }
 }
@@ -24,6 +26,11 @@ android {
     targetSdkVersion 25
     versionCode 1
     versionName '0.1.0'
+        manifestPlaceholders = [
+                JPUSH_APPKEY: "1df6239b32c427addb126022",
+                APP_CHANNEL : "default"
+        ]
+
     ndk {
       abiFilters 'armeabi-v7a', 'x86'
     }

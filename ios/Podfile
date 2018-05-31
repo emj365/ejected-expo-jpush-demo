@@ -43,6 +43,10 @@ target 'jpush-demo' do
     :inhibit_warnings => true
 
 
+  pod 'JCoreRN', :path => '../node_modules/jcore-react-native'
+
+  pod 'JPushRN', :path => '../node_modules/jpush-react-native'
+
   post_install do |installer|
     installer.pods_project.main_group.tab_width = '2';
     installer.pods_project.main_group.indent_width = '2';
