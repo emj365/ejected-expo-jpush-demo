@@ -181,6 +181,14 @@ componentDidMount() {
 }
 ```
 
+### Troubleshoot
+
+#### Error Xcode build
+
+> To use Expo's fork, make sure your package.json contains a react native dependency similar to https://github.com/expo/react-native/archive/sdk-24.0.0.tar.gz but replace 24 with your Expo SDK version. Reinstall JS dependencies, then after that, re-run pod install. For documentation about this, see the Developing with ExpoKit guide.
+
+https://github.com/expo/expo/issues/401#issuecomment-355869412
+
 # Expo Readme
 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
