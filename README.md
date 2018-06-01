@@ -148,6 +148,39 @@ Appkey and Channel in `/Users/michael/git/jpush-demo/android/app/build.gradle`:
     android:value="${APP_CHANNEL}" />
 ```
 
+### Local Notification
+
+example:
+
+```javascript
+componentDidMount() {
+  JPushModule.initPush()
+
+  if (Platform.OS === 'ios') {
+    // ...
+    JPushModule.sendLocalNotification({
+      id: 1,
+      title: 'local notification',
+      content: 'test content',
+      extra: { key1: 'value1', key2: 'value2' },
+      fireTime: new Date().getTime() + 5000
+    })
+  } else {
+    // ...
+    JPushModule.sendLocalNotification({
+      buildId: 1,
+      id: 1,
+      title: 'local notification',
+      content: 'test content',
+      extra: { key1: 'value1', key2: 'value2' },
+      fireTime: new Date().getTime() + 5000
+    })
+  }
+
+  // ...
+}
+```
+
 # Expo Readme
 
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).

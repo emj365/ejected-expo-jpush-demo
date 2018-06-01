@@ -9,11 +9,28 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    JPushModule.initPush()
+
     if (Platform.OS === 'ios') {
       // JPushModule.setBadge(0)
       JPushModule.getBadge(console.log)
+      JPushModule.sendLocalNotification({
+        id: 1,
+        title: 'local notification',
+        content: 'test content',
+        extra: { key1: 'value1', key2: 'value2' },
+        fireTime: new Date().getTime() + 5000
+      })
     } else {
       JPushModule.notifyJSDidLoad(console.log)
+      JPushModule.sendLocalNotification({
+        buildId: 1,
+        id: 1,
+        title: 'local notification',
+        content: 'test content',
+        extra: { key1: 'value1', key2: 'value2' },
+        fireTime: new Date().getTime() + 5000
+      })
     }
 
     JPushModule.addReceiveOpenNotificationListener(map => {
