@@ -1,3 +1,155 @@
+# JPush Demo with Ejected Expo
+
+## Summary
+
+Because of we have an React Native mobile app project base on Expo and now we are going to eject Expo and add JPush native modules to the project, thus we create this to figure out what todo with:
+
+* eject Expo app
+* add JPush
+* configure JPush on both Android and iOS
+* test remote notification
+* add the local notification
+
+## Process
+
+### Create Expo React Native App
+
+```
+npm i -g create-react-native-app
+create-react-native-app <app-name>
+```
+
+### Eject Expo
+
+```
+yarn eject
+```
+
+### Git Ignore of Native Project Files
+
+reference: https://www.gitignore.io/api/reactnative
+
+And ignore of native dependencies:
+
+```
+android/maven/
+ios/Pods/
+```
+
+### Add JPush Modules
+
+reference: https://github.com/jpush/jpush-react-native
+
+```
+npm install jpush-react-native jcore-react-native --save
+node_modules/.bin/react-native link
+```
+
+### Add JS Codes
+
+```javascript
+componentWillUnmount() {
+  JPushModule.removeReceiveCustomMsgListener()
+  JPushModule.removeReceiveNotificationListener()
+}
+
+componentDidMount() {
+  if (Platform.OS === 'ios') {
+    // JPushModule.setBadge(0)
+    JPushModule.getBadge(console.log)
+  } else {
+    JPushModule.notifyJSDidLoad(console.log)
+  }
+
+  JPushModule.addReceiveOpenNotificationListener(map => {
+    console.log('Opening notification!')
+    //自定义点击通知后打开某个 Activity，比如跳转到 pushActivity
+    // this.props.navigator.jumpTo({name: "pushActivity"})
+  })
+
+  JPushModule.addReceiveNotificationListener(map => {
+    console.log('alertContent: ' + map.alertContent)
+    console.log('extras: ' + map.extras)
+    // var extra = JSON.parse(map.extras);
+    // console.log(extra.key + ": " + extra.value);
+  })
+
+  JPushModule.addReceiveCustomMsgListener(map => {
+    console.log('alertContent: ' + map.alertContent)
+    console.log('extras: ' + map.extras)
+    // var extra = JSON.parse(map.extras);
+    // console.log(extra.key + ": " + extra.value);
+  })
+}
+```
+
+### iOS Manually Configure
+
+#### RN Link Miss Register Codes
+
+`react-native link` of JPush miss something please check https://docs.jiguang.cn/jpush/client/iOS/ios_guide_new/ to fix.
+
+Miss register codes in `-(BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions`:
+
+```
+//Required
+//notice: 3.0.0及以后版本注册可以这样写，也可以继续用之前的注册方式
+JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
+entity.types = JPAuthorizationOptionAlert|JPAuthorizationOptionBadge|JPAuthorizationOptionSound;
+if ([[UIDevice currentDevice].systemVersion floatValue] >= 8.0) {
+  // 可以添加自定义categories
+  // NSSet<UNNotificationCategory *> *categories for iOS10 or later
+  // NSSet<UIUserNotificationCategory *> *categories for iOS8 and iOS9
+}
+[JPUSHService registerForRemoteNotificationConfig:entity delegate:self];
+```
+
+### Android Manually Configure
+
+#### RN Link Miss Something
+
+`react-native link` of JPush miss something please check https://github.com/jpush/jpush-react-native/blob/master/documents/check.md to fix.
+
+`settings.gradle` hasn't updated:
+
+```
+include ':app', ':jpush-react-native', ':jcore-react-native'
+project(':jpush-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/jpush-react-native/android')
+project(':jcore-react-native').projectDir = new File(rootProject.projectDir, '../node_modules/jcore-react-native/android')
+```
+
+#### RN Link Misstake
+
+`react-native link` of JPush inject Android dependencies to a wrong place:
+
+```
+buildscript {
+  repositories {
+    maven { url 'https://maven.fabric.io/public' }
+  }
+
+  dependencies {
+    <wrong place>
+    classpath 'io.fabric.tools:gradle:1.+'
+  }
+}
+```
+
+#### Replace Value Manually
+
+Appkey and Channel in `/Users/michael/git/jpush-demo/android/app/build.gradle`:
+
+```
+<meta-data
+    android:name="JPUSH_APPKEY"
+    android:value="${JPUSH_APPKEY}" />
+<meta-data
+    android:name="JPUSH_CHANNEL"
+    android:value="${APP_CHANNEL}" />
+```
+
+# Expo Readme
+
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
@@ -66,14 +218,14 @@ Like `npm start`, but also attempts to open your app on a connected Android devi
 
 ##### Using Android Studio's `adb`
 
-1. Make sure that you can run adb from your terminal.
-2. Open Genymotion and navigate to `Settings -> ADB`. Select “Use custom Android SDK tools” and update with your [Android SDK directory](https://stackoverflow.com/questions/25176594/android-sdk-location).
+1.  Make sure that you can run adb from your terminal.
+2.  Open Genymotion and navigate to `Settings -> ADB`. Select “Use custom Android SDK tools” and update with your [Android SDK directory](https://stackoverflow.com/questions/25176594/android-sdk-location).
 
 ##### Using Genymotion's `adb`
 
-1. Find Genymotion’s copy of adb. On macOS for example, this is normally `/Applications/Genymotion.app/Contents/MacOS/tools/`.
-2. Add the Genymotion tools directory to your path (instructions for [Mac](http://osxdaily.com/2014/08/14/add-new-path-to-path-command-line/), [Linux](http://www.computerhope.com/issues/ch001647.htm), and [Windows](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/)).
-3. Make sure that you can run adb from your terminal.
+1.  Find Genymotion’s copy of adb. On macOS for example, this is normally `/Applications/Genymotion.app/Contents/MacOS/tools/`.
+2.  Add the Genymotion tools directory to your path (instructions for [Mac](http://osxdaily.com/2014/08/14/add-new-path-to-path-command-line/), [Linux](http://www.computerhope.com/issues/ch001647.htm), and [Windows](https://www.howtogeek.com/118594/how-to-edit-your-system-path-for-easy-command-line-access/)).
+3.  Make sure that you can run adb from your terminal.
 
 #### `npm run eject`
 
@@ -116,6 +268,7 @@ REACT_NATIVE_PACKAGER_HOSTNAME='my-custom-ip-address-or-hostname' npm start
 ```
 
 Windows:
+
 ```
 set REACT_NATIVE_PACKAGER_HOSTNAME='my-custom-ip-address-or-hostname'
 npm start
@@ -190,9 +343,9 @@ If you're on a Mac, there are a few errors that users sometimes see when attempt
 
 There are a few steps you may want to take to troubleshoot these kinds of errors:
 
-1. Make sure Xcode is installed and open it to accept the license agreement if it prompts you. You can install it from the Mac App Store.
-2. Open Xcode's Preferences, the Locations tab, and make sure that the `Command Line Tools` menu option is set to something. Sometimes when the CLI tools are first installed by Homebrew this option is left blank, which can prevent Apple utilities from finding the simulator. Make sure to re-run `npm/yarn run ios` after doing so.
-3. If that doesn't work, open the Simulator, and under the app menu select `Reset Contents and Settings...`. After that has finished, quit the Simulator, and re-run `npm/yarn run ios`.
+1.  Make sure Xcode is installed and open it to accept the license agreement if it prompts you. You can install it from the Mac App Store.
+2.  Open Xcode's Preferences, the Locations tab, and make sure that the `Command Line Tools` menu option is set to something. Sometimes when the CLI tools are first installed by Homebrew this option is left blank, which can prevent Apple utilities from finding the simulator. Make sure to re-run `npm/yarn run ios` after doing so.
+3.  If that doesn't work, open the Simulator, and under the app menu select `Reset Contents and Settings...`. After that has finished, quit the Simulator, and re-run `npm/yarn run ios`.
 
 ### QR Code does not scan
 
